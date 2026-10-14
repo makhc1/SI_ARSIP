@@ -19,9 +19,15 @@ class GoogleDriveService
         $this->client->setApplicationName('SIARSIP KUATHAN');
         $this->client->setScopes([Drive::DRIVE]);
 
-        $credentialsPath = storage_path('app/credentials/credentials.json');
+        $credentialsJson = env('GOOGLE_CREDENTIALS_JSON');
+        $credentialsPath = env('GOOGLE_APPLICATION_CREDENTIALS', storage_path('app/credentials/credentials.json'));
 
-        if (file_exists($credentialsPath)) {
+        if (! empty($credentialsJson)) {
+            $decoded = json_decode($credentialsJson, true);
+            if (is_array($decoded)) {
+                $this->client->setAuthConfig($decoded);
+            }
+        } elseif (file_exists($credentialsPath)) {
             $this->client->setAuthConfig($credentialsPath);
         }
 

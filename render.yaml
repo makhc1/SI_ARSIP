@@ -1,0 +1,59 @@
+services:
+  - type: web
+    name: si-arsip
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: Dockerfile
+    healthCheckPath: /up
+    envVars:
+      - key: APP_NAME
+        value: SI-ARSIP
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: TRUSTED_PROXIES
+        value: "*"
+      - key: FORCE_HTTPS
+        value: "true"
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: error
+
+      # Database Configuration for TiDB Cloud
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "4000"
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: MYSQL_ATTR_SSL_CA
+        value: /etc/ssl/certs/ca-certificates.crt
+
+      # Session & Cache configured for TiDB / database
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
+
+      # Automatically run migrations on deploy
+      - key: AUTO_MIGRATE
+        value: "true"
+
+      # Optional: Google Drive credentials JSON (paste raw JSON content)
+      - key: GOOGLE_CREDENTIALS_JSON
+        sync: false

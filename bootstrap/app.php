@@ -17,8 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        if ($trustedProxies = env('TRUSTED_PROXIES')) {
-            $middleware->trustProxies(at: array_map('trim', explode(',', $trustedProxies)));
+        $trustedProxies = env('TRUSTED_PROXIES', env('APP_ENV') === 'production' ? '*' : null);
+        if ($trustedProxies) {
+            $middleware->trustProxies(at: $trustedProxies === '*' ? '*' : array_map('trim', explode(',', $trustedProxies)));
         }
 
         $middleware->web(append: [

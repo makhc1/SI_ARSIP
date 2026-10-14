@@ -60,8 +60,22 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+                (defined('Pdo\Mysql::ATTR_SSL_CA') ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA', env('DB_SSL_CA', (function () {
+                    if (str_contains((string) env('DB_HOST'), 'tidbcloud.com')) {
+                        if (file_exists('/etc/ssl/certs/ca-certificates.crt')) {
+                            return '/etc/ssl/certs/ca-certificates.crt';
+                        }
+                        if (ini_get('curl.cainfo') && file_exists((string) ini_get('curl.cainfo'))) {
+                            return ini_get('curl.cainfo');
+                        }
+                    }
+
+                    return null;
+                })())),
+                (defined('Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT') ? Mysql::ATTR_SSL_VERIFY_SERVER_CERT : PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT) => env('MYSQL_ATTR_SSL_VERIFY_SERVER_CERT') !== null
+                    ? filter_var(env('MYSQL_ATTR_SSL_VERIFY_SERVER_CERT'), FILTER_VALIDATE_BOOLEAN)
+                    : null,
+            ], fn ($value) => ! is_null($value)) : [],
         ],
 
         'mariadb' => [
