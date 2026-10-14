@@ -16,6 +16,12 @@ mkdir -p /var/www/html/storage/framework/cache/data \
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Ensure APP_KEY exists to prevent 500 error on boot
+if [ -z "$APP_KEY" ]; then
+    echo "WARNING: APP_KEY is not set in environment variables! Generating a runtime application key..."
+    export APP_KEY=$(php artisan key:generate --show 2>/dev/null || echo "")
+fi
+
 # Create storage symlink
 php artisan storage:link --force 2>/dev/null || true
 
@@ -27,9 +33,9 @@ if [ "${APP_ENV:-production}" = "production" ]; then
     php artisan view:cache || echo "View caching skipped or failed."
 fi
 
-# Run migrations if enabled
-if [ "${AUTO_MIGRATE:-false}" = "true" ] || [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
-    echo "Running database migrations against TiDB/database..."
+# Run migrations if enabled or if Railway MySQL is detected
+if [ "${AUTO_MIGRATE:-false}" = "true" ] || [ "${RUN_MIGRATIONS:-false}" = "true" ] || [ -n "${MYSQLHOST}" ]; then
+    echo "Running database migrations..."
     php artisan migrate --force || echo "Migration encountered an issue, proceeding anyway..."
 fi
 

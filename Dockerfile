@@ -4,8 +4,8 @@
 FROM node:20-alpine AS frontend
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+COPY package*.json .npmrc* ./
+RUN npm ci --legacy-peer-deps
 
 COPY . .
 RUN npm run build
@@ -76,7 +76,7 @@ RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Render automatically exposes $PORT (defaults to 10000 or 80)
-EXPOSE 80 10000
+# Expose HTTP port (Railway, Render, etc. route through dynamic $PORT)
+EXPOSE 80
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
