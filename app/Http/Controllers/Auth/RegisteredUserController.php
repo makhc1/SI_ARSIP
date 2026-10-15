@@ -13,6 +13,7 @@ use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Role;
 
 class RegisteredUserController extends Controller
 {
@@ -43,7 +44,7 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        if ($viewerRole = \Spatie\Permission\Models\Role::where('name', 'Viewer')->first()) {
+        if ($viewerRole = Role::where('name', 'Viewer')->first()) {
             $user->assignRole($viewerRole);
         }
 
