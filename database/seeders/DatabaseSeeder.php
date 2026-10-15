@@ -58,6 +58,7 @@ class DatabaseSeeder extends Seeder
         $viewer->syncRoles([$viewerRole]);
 
         $this->call([
+            BagdatinRoleUserSeeder::class,
             ArchiveYearSeeder::class,
         ]);
     }

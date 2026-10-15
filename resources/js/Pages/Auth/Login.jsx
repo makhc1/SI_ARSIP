@@ -33,13 +33,14 @@ export default function Login({ status, canResetPassword }) {
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="email" value="Email" className="text-slate-200 font-medium" />
+                    <InputLabel htmlFor="email" value="Email atau NRP / NIP" className="text-slate-200 font-medium" />
 
                     <TextInput
                         id="email"
-                        type="email"
+                        type="text"
                         name="email"
                         value={data.email}
+                        placeholder="Email atau NRP / NIP"
                         className="mt-1 block w-full h-11 px-3.5 text-base sm:text-sm bg-white text-slate-900 border-slate-300 shadow-sm placeholder:text-slate-400 focus:border-siarsip-terracottaDark focus:ring-2 focus:ring-siarsip-terracottaDark"
                         autoComplete="username"
                         isFocused={true}

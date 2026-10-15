@@ -31,7 +31,11 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $user = $request->user();
-        $canUpload = $user ? ($user->hasRole('Admin') || $user->can('upload-dokumen')) : false;
+        $canUpload = $user ? (
+            $user->hasRole(['super_admin', 'Admin', 'kasubbag', 'pengolah_data', 'penelaah_kebijakan', 'operasional'])
+            || $user->can('create_archive')
+            || $user->can('upload-dokumen')
+        ) : false;
 
         return [
             ...parent::share($request),
@@ -39,6 +43,11 @@ class HandleInertiaRequests extends Middleware
                 'user' => $user ? array_merge($user->toArray(), [
                     'roles' => $user->getRoleNames(),
                     'permissions' => $user->getAllPermissions()->pluck('name'),
+                    'subbagian' => $user->subbagian,
+                    'rank_grade' => $user->rank_grade,
+                    'position_title' => $user->position_title,
+                    'nrp_nip' => $user->nrp_nip,
+                    'is_active' => (bool) $user->is_active,
                     'canUpload' => $canUpload,
                 ]) : null,
             ],
